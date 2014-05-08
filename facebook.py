@@ -2,6 +2,7 @@
 # encoding: utf-8
 import requests
 import json
+import logging
 import sys
 import urllib
 
@@ -18,6 +19,7 @@ def parse_query_output(query_result_json):
 
 
 def main(token):
+    logging.basicConfig(level=logging.INFO)
     access_token = token
     base_url = 'https://graph.facebook.com/v2.0/fql'
 
@@ -33,11 +35,13 @@ def main(token):
              """WHERE uid in (SELECT fromid FROM #comments)"}""")
     url = '{0}?q={1}&access_token={2}'.format(base_url, urllib.quote(query),
                                               access_token)
-    print url
     content = requests.get(url).json()
-    print json.dumps(content, indent=1)
-    parse_query_output(content)
 
+    try:
+        parse_query_output(content)
+    except KeyError as e:
+        logging.critical("No data found in JSON: {}".format(content))
+        raise e
 
 if __name__ == '__main__':
     main(sys.argv[1])
