@@ -6,6 +6,17 @@ import sys
 import urllib
 
 
+def parse_query_output(query_result_json):
+    print type(query_result_json)
+
+    for comment in query_result_json['data'][0]['fql_result_set']:
+        print comment['fromid'], comment['post_id'], comment['time'], \
+            comment['text']
+
+    for user in query_result_json['data'][1]['fql_result_set']:
+        print user['uid'], user['name']
+
+
 def main(token):
     access_token = token
     base_url = 'https://graph.facebook.com/v2.0/fql'
@@ -19,6 +30,7 @@ def main(token):
     print url
     content = requests.get(url).json()
     print json.dumps(content, indent=1)
+    parse_query_output(content)
 
 
 if __name__ == '__main__':
