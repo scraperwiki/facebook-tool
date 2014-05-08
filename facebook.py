@@ -24,7 +24,13 @@ def main(token):
     # get post details from Reese's page
     #query = "SELECT fromid, text, time, post_id FROM comment WHERE post_id in (SELECT post_id FROM stream WHERE source_id IN (SELECT page_id FROM page WHERE username='reeses'))"
 
-    query = """{"comments": "SELECT fromid, text, time, post_id FROM comment WHERE post_id in (SELECT post_id FROM stream WHERE source_id IN (SELECT page_id FROM page WHERE username='reeses'))","names":"select uid,name from user where uid in (SELECT fromid FROM #comments)"}"""
+    query = ("""{"comments": "SELECT fromid, text, time, post_fbid, post_id """
+             """FROM comment WHERE post_id in """
+             """(SELECT post_id FROM stream """
+             """WHERE source_id IN (SELECT page_id FROM page """
+             """WHERE username='reeses'))","""
+             """"names":"select uid,name from user """
+             """WHERE uid in (SELECT fromid FROM #comments)"}""")
     url = '{0}?q={1}&access_token={2}'.format(base_url, urllib.quote(query),
                                               access_token)
     print url
