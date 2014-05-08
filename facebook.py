@@ -1,11 +1,11 @@
 #!/usr/bin/env/python
 # encoding: utf-8
-import requests
 import json
 import logging
 import sys
 import urllib
 
+import requests
 import scraperwiki
 
 
