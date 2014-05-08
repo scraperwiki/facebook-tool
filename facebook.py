@@ -6,16 +6,27 @@ import logging
 import sys
 import urllib
 
+import scraperwiki
+
 
 def parse_query_output(query_result_json):
-    print type(query_result_json)
+    results = zip(query_result_json['data'][0]['fql_result_set'],
+                  query_result_json['data'][1]['fql_result_set'])
 
-    for comment in query_result_json['data'][0]['fql_result_set']:
-        print comment['fromid'], comment['post_id'], comment['time'], \
-            comment['text']
+    rows = []
+    for result in results:
+        data = {}
+        data['from_id'] = result[0]['fromid']
+        data['post_fbid'] = result[0]['post_fbid']
+        data['post_id'] = result[0]['post_id']
+        data['time'] = result[0]['time']
+        data['text'] = result[0]['text']
+        data['uid'] = result[1]['uid']
+        data['name'] = result[1]['name']
+        rows.append(data)
 
-    for user in query_result_json['data'][1]['fql_result_set']:
-        print user['uid'], user['name']
+    logging.info("Got {0} rows.".format(len(rows)))
+    scraperwiki.sqlite.save(unique_keys=['post_fbid'], data=rows)
 
 
 def main(token):
