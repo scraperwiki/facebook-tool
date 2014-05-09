@@ -29,7 +29,11 @@ def parse_query_output(query_result_json):
     scraperwiki.sqlite.save(unique_keys=['post_fbid'], data=rows)
 
 
-def main(token):
+def main(token, username):
+    """ Look up first comment page(?) for account; save to database.
+
+    python facebook.py <access_token> <username>
+    """
     logging.basicConfig(level=logging.INFO)
     access_token = token
     base_url = 'https://graph.facebook.com/v2.0/fql'
@@ -37,13 +41,15 @@ def main(token):
     # get post details from Reese's page
     #query = "SELECT fromid, text, time, post_id FROM comment WHERE post_id in (SELECT post_id FROM stream WHERE source_id IN (SELECT page_id FROM page WHERE username='reeses'))"
 
-    query = ("""{"comments": "SELECT fromid, text, time, post_fbid, post_id """
+    query = ("""{{"comments": """
+             """"SELECT fromid, text, time, post_fbid, post_id """
              """FROM comment WHERE post_id in """
              """(SELECT post_id FROM stream """
              """WHERE source_id IN (SELECT page_id FROM page """
-             """WHERE username='reeses'))","""
+             """WHERE username='{}'))","""
              """"names":"select uid,name from user """
-             """WHERE uid in (SELECT fromid FROM #comments)"}""")
+             """WHERE uid in (SELECT fromid """
+             """FROM #comments)"}}""".format(username))
     url = '{0}?q={1}&access_token={2}'.format(base_url, urllib.quote(query),
                                               access_token)
     content = requests.get(url).json()
@@ -55,4 +61,4 @@ def main(token):
         raise e
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2])
