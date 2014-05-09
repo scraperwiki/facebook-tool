@@ -15,14 +15,10 @@ def parse_query_output(query_result_json):
 
     rows = []
     for result in results:
+        items = result[0].items() + result[1].items()
         data = {}
-        data['from_id'] = result[0]['fromid']
-        data['post_fbid'] = result[0]['post_fbid']
-        data['post_id'] = result[0]['post_id']
-        data['time'] = result[0]['time']
-        data['text'] = result[0]['text']
-        data['uid'] = result[1]['uid']
-        data['name'] = result[1]['name']
+        for key, value in items:
+            data[key] = value
         rows.append(data)
 
     logging.info("Got {0} rows.".format(len(rows)))
